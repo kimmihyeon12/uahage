@@ -114,12 +114,12 @@ class _myPageState extends State<myPage> {
     try {
       await http
           .put(
-            "http://13.209.41.43/updateImage/$userId$loginOption",
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode({"URL": ""}),
-          )
+        "http://13.209.41.43/updateImage/$userId$loginOption",
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({"URL": ""}),
+      )
           .then((value) => print(value.body))
           .catchError((err) => print(err));
     } catch (error) {}
@@ -129,7 +129,7 @@ class _myPageState extends State<myPage> {
     var data;
     try {
       var response =
-          await http.get("http://13.209.41.43/getNicknames/$nickName");
+      await http.get("http://13.209.41.43/getNicknames/$nickName");
       if (response.statusCode == 200) {
         data = jsonDecode(response.body)["message"];
         setState(() {
@@ -229,7 +229,7 @@ class _myPageState extends State<myPage> {
       String fileName = file.path.split('/').last;
       FormData formData = FormData.fromMap({
         "profileImage":
-            await MultipartFile.fromFile(file.path, filename: fileName),
+        await MultipartFile.fromFile(file.path, filename: fileName),
       });
       Dio dio = new Dio();
       var response;
@@ -255,12 +255,12 @@ class _myPageState extends State<myPage> {
     try {
       await http
           .put(
-            "http://13.209.41.43/updateImage/$userId$loginOption",
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode({"URL": _uploadedFileURL}),
-          )
+        "http://13.209.41.43/updateImage/$userId$loginOption",
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({"URL": _uploadedFileURL}),
+      )
           .then((value) => print(value.body))
           .catchError((err) => print(err));
     } catch (error) {}
@@ -357,6 +357,7 @@ class _myPageState extends State<myPage> {
   //   );
   // }
 
+  bool isIOS = Platform.isIOS;
   @override
   Widget build(BuildContext context) {
     double screenHeight = 2667 / MediaQuery.of(context).size.height;
@@ -371,6 +372,15 @@ class _myPageState extends State<myPage> {
     );
 
     // print("widgetbuuild imageLink " + imageLink);
+
+    // isIOS
+    //     ? SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark
+    //         .copyWith(
+    //             statusBarBrightness:
+    //                 Brightness.dark // Dark == white status bar -- for IOS.
+    //             ))
+    //     : null;
+
     return WillPopScope(
       onWillPop: () async {
         // exit(0);
@@ -379,8 +389,10 @@ class _myPageState extends State<myPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: SafeArea(
-          child: SingleChildScrollView(
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: isIOS
+              ? SingleChildScrollView(
             child: Column(
               children: [
                 //back button
@@ -389,32 +401,34 @@ class _myPageState extends State<myPage> {
                       110 / screenHeight, 1100 / screenWidth, 0),
                   child: onEdit
                       ? InkWell(
-                          onTap: () {
-                            setState(() {
-                              onEdit = false;
-                            });
-                          },
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "./assets/myPage/back.png",
-                                width: 43 / screenWidth,
-                                height: 76 / screenHeight,
+                    onTap: () {
+                      setState(() {
+                        onEdit = false;
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "./assets/myPage/back.png",
+                          width: 43 / screenWidth,
+                          height: 76 / screenHeight,
+                        ),
+                        // 내 정보
+                        Container(
+                          margin: EdgeInsets.only(
+                              left: 33 / screenWidth),
+                          child: Text("내 정보",
+                              style: TextStyle(
+                                color: Color.fromRGBO(
+                                    255, 114, 148, 1.0),
+                                fontFamily: 'NotoSansCJKkr_Medium',
+                                fontSize: 57 / screenWidth,
                               ),
-                              // 내 정보
-                              Container(
-                                margin: EdgeInsets.only(left: 33 / screenWidth),
-                                child: Text("내 정보",
-                                    style: TextStyle(
-                                      color: Color.fromRGBO(255, 114, 148, 1.0),
-                                      fontFamily: 'NotoSansCJKkr_Medium',
-                                      fontSize: 57 / screenWidth,
-                                    ),
-                                    textAlign: TextAlign.left),
-                              )
-                            ],
-                          ),
+                              textAlign: TextAlign.left),
                         )
+                      ],
+                    ),
+                  )
                       : Container(),
                 ),
 
@@ -427,7 +441,7 @@ class _myPageState extends State<myPage> {
                         width: 439 / screenWidth,
                         child: CircleAvatar(
                           backgroundImage:
-                              AssetImage("./assets/myPage/avatar.png"),
+                          AssetImage("./assets/myPage/avatar.png"),
                           // backgroundImage: (() {
                           //   if (_image != null) {
                           //     print("1");
@@ -454,17 +468,18 @@ class _myPageState extends State<myPage> {
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
                                       image: FileImage(_image), //imageURL
-                                      fit: BoxFit.fitWidth),
+                                      fit: BoxFit.fill),
                                 ),
                               );
-                            } else if (imageLink != "" && imageLink != null) {
+                            } else if (imageLink != "" &&
+                                imageLink != null) {
                               print("2");
                               return Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
                                       image: NetworkImage(imageLink),
-                                      fit: BoxFit.fitWidth),
+                                      fit: BoxFit.fill),
                                 ),
                               );
                             } else {
@@ -475,7 +490,7 @@ class _myPageState extends State<myPage> {
                                   image: DecorationImage(
                                       image: AssetImage(
                                           "./assets/myPage/avatar.png"),
-                                      fit: BoxFit.fitWidth),
+                                      fit: BoxFit.fill),
                                 ),
                               );
                             }
@@ -488,19 +503,19 @@ class _myPageState extends State<myPage> {
                         child: InkWell(
                           onTap: loginOption != "login"
                               ? () {
-                                  _showPicker(context);
-                                }
+                            _showPicker(context);
+                          }
                               : () {
-                                  Fluttertoast.showToast(
-                                    msg: "로그인 해주세요!",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                    backgroundColor: Colors.black45,
-                                    textColor: Colors.white,
-                                    fontSize: 48 / screenWidth,
-                                  );
-                                },
+                            Fluttertoast.showToast(
+                              msg: "로그인 해주세요!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.black45,
+                              textColor: Colors.white,
+                              fontSize: 48 / screenWidth,
+                            );
+                          },
                           child: Image.asset(
                             "./assets/myPage/camera.png",
                             height: 109 / screenHeight,
@@ -515,246 +530,250 @@ class _myPageState extends State<myPage> {
                 // Nickname
                 onEdit
                     ? Container(
-                        margin: EdgeInsets.only(
-                          top: 85 / screenHeight,
+                  margin: EdgeInsets.only(
+                    top: 85 / screenHeight,
+                  ),
+                  child: Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 닉네임
+                        Container(
+                          margin: EdgeInsets.fromLTRB(
+                              157 / screenWidth,
+                              45 / screenHeight,
+                              88 / screenWidth,
+                              0),
+                          child: Text("닉네임",
+                              style: TextStyle(
+                                  color: const Color(0xffff7292),
+                                  fontFamily:
+                                  "NotoSansCJKkr_Medium",
+                                  fontSize: 58 / screenWidth),
+                              textAlign: TextAlign.left),
                         ),
-                        child: Container(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // 닉네임
-                              Container(
-                                margin: EdgeInsets.fromLTRB(157 / screenWidth,
-                                    45 / screenHeight, 88 / screenWidth, 0),
-                                child: Text("닉네임",
-                                    style: TextStyle(
-                                        color: const Color(0xffff7292),
-                                        fontFamily: "NotoSansCJKkr_Medium",
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              right: 121 / screenWidth,
+                            ),
+                            child: Stack(
+                              children: [
+                                TextFormField(
+                                  // controller: yController,
+
+                                  onChanged: (txt) {
+                                    setState(() {
+                                      nickName = txt;
+                                    });
+                                  },
+
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      color: Color(0xff3a3939),
+                                      fontFamily:
+                                      "NotoSansCJKkr_Bold",
+                                      fontSize: 58 / screenWidth),
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(
+                                        right: 410 / screenWidth),
+                                    enabledBorder:
+                                    UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                        const Color(0xffff7292),
+                                      ),
+
+                                      //Color.fromRGBO(255, 114, 148, 1.0)
+                                    ),
+                                    focusedBorder:
+                                    UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color(0xffff7292)),
+                                    ),
+                                    hintText: '닉네임 수정 칼라',
+                                    hintStyle: TextStyle(
+                                        color:
+                                        const Color(0xffcacaca),
+                                        fontFamily:
+                                        "NotoSansCJKkr_Medium",
                                         fontSize: 58 / screenWidth),
-                                    textAlign: TextAlign.left),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                    right: 121 / screenWidth,
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      TextFormField(
-                                        // controller: yController,
-
-                                        onChanged: (txt) {
-                                          setState(() {
-                                            nickName = txt;
-                                          });
-                                        },
-
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                            color: Color(0xff3a3939),
-                                            fontFamily: "NotoSansCJKkr_Bold",
-                                            fontSize: 58 / screenWidth),
-                                        decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.only(
-                                              right: 410 / screenWidth),
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: const Color(0xffff7292),
-                                            ),
-
-                                            //Color.fromRGBO(255, 114, 148, 1.0)
-                                          ),
-                                          focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color(0xffff7292)),
-                                          ),
-                                          hintText: '닉네임 수정 칼라',
-                                          hintStyle: TextStyle(
-                                              color: const Color(0xffcacaca),
-                                              fontFamily:
-                                                  "NotoSansCJKkr_Medium",
-                                              fontSize: 58 / screenWidth),
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: FlatButton(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0)),
-                                          color: nickName == ""
-                                              ? Color(0xffcacaca)
-                                              : Color(0xffff7292),
-                                          onPressed:
-                                              loginOption != "login" &&
-                                                      nickName != ""
-                                                  ? () {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (context) =>
-                                                            FutureBuilder(
-                                                                future:
-                                                                    checkNickname(),
-                                                                builder: (context,
-                                                                    snapshot) {
-                                                                  if (snapshot
-                                                                      .hasData) {
-                                                                    // print(snapshot.data);
-                                                                    return AlertDialog(
-                                                                      shape: RoundedRectangleBorder(
-                                                                          borderRadius:
-                                                                              BorderRadius.all(Radius.circular(10.0))),
-                                                                      title: // 사용 가능한 닉네임입니다.
-                                                                          Text(
-                                                                              snapshot.data,
-                                                                              style: TextStyle(color: const Color(0xff4d4d4d), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: 62.5 / screenWidth),
-                                                                              textAlign: TextAlign.left),
-                                                                      actions: [
-                                                                        FlatButton(
-                                                                            onPressed:
-                                                                                () {
-                                                                              Navigator.pop(context);
-                                                                            },
-                                                                            child: // 확인
-                                                                                Text("확인", style: TextStyle(color: const Color(0xffff7292), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: _fontsize), textAlign: TextAlign.center))
-                                                                      ],
-                                                                    );
-                                                                  } else if (snapshot
-                                                                      .hasError)
-                                                                    return AlertDialog(
-                                                                      shape: RoundedRectangleBorder(
-                                                                          borderRadius:
-                                                                              BorderRadius.all(Radius.circular(10.0))),
-                                                                      title:
-                                                                          // id already exists.
-                                                                          Text(
-                                                                              snapshot.error,
-                                                                              style: TextStyle(color: Color(0xff4d4d4d), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: 62.5 / screenWidth),
-                                                                              textAlign: TextAlign.left),
-                                                                      actions: [
-                                                                        FlatButton(
-                                                                            onPressed:
-                                                                                () {
-                                                                              Navigator.pop(context);
-                                                                            },
-                                                                            child: // 확인
-                                                                                Text("확인", style: TextStyle(color: const Color(0xffff7292), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: _fontsize), textAlign: TextAlign.center))
-                                                                      ],
-                                                                    );
-
-                                                                  return Center(
-                                                                    child: SizedBox(
-                                                                        height: 200 /
-                                                                            screenHeight,
-                                                                        width: 200 /
-                                                                            screenWidth,
-                                                                        child: buildSpinKitThreeBounce(
-                                                                            80,
-                                                                            screenWidth)
-                                                                        // CircularProgressIndicator(
-                                                                        //   strokeWidth:
-                                                                        //       5.0,
-                                                                        //   valueColor:
-                                                                        //       new AlwaysStoppedAnimation<Color>(
-                                                                        //     Colors.pinkAccent,
-                                                                        //   ),
-                                                                        // )
-                                                                        ),
-                                                                  );
-                                                                }),
-                                                      );
-                                                    }
-                                                  : () {},
-                                          child: // 중복확인
-                                              Text("중복확인",
-                                                  style: TextStyle(
-                                                      color: const Color(
-                                                          0xffffffff),
-                                                      fontFamily:
-                                                          "NotoSansCJKkr_Medium",
-                                                      fontSize:
-                                                          50 / screenWidth),
-                                                  textAlign: TextAlign.left),
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: FlatButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            8.0)),
+                                    color: nickName == ""
+                                        ? Color(0xffcacaca)
+                                        : Color(0xffff7292),
+                                    onPressed:
+                                    loginOption != "login" &&
+                                        nickName != ""
+                                        ? () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            FutureBuilder(
+                                                future:
+                                                checkNickname(),
+                                                builder:
+                                                    (context,
+                                                    snapshot) {
+                                                  if (snapshot
+                                                      .hasData) {
+                                                    // print(snapshot.data);
+                                                    return AlertDialog(
+                                                      shape:
+                                                      RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                                                      title: // 사용 가능한 닉네임입니다.
+                                                      Text(snapshot.data, style: TextStyle(color: const Color(0xff4d4d4d), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: 62.5 / screenWidth), textAlign: TextAlign.left),
+                                                      actions: [
+                                                        FlatButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(context);
+                                                            },
+                                                            child: // 확인
+                                                            Text("확인", style: TextStyle(color: const Color(0xffff7292), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: _fontsize), textAlign: TextAlign.center))
+                                                      ],
+                                                    );
+                                                  } else if (snapshot
+                                                      .hasError)
+                                                    return AlertDialog(
+                                                      shape:
+                                                      RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                                                      title:
+                                                      // id already exists.
+                                                      Text(snapshot.error, style: TextStyle(color: Color(0xff4d4d4d), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: 62.5 / screenWidth), textAlign: TextAlign.left),
+                                                      actions: [
+                                                        FlatButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(context);
+                                                            },
+                                                            child: // 확인
+                                                            Text("확인", style: TextStyle(color: const Color(0xffff7292), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: _fontsize), textAlign: TextAlign.center))
+                                                      ],
+                                                    );
+
+                                                  return Center(
+                                                    child: SizedBox(
+                                                        height: 200 / screenHeight,
+                                                        width: 200 / screenWidth,
+                                                        child: buildSpinKitThreeBounce(80, screenWidth)
+                                                      // CircularProgressIndicator(
+                                                      //   strokeWidth:
+                                                      //       5.0,
+                                                      //   valueColor:
+                                                      //       new AlwaysStoppedAnimation<Color>(
+                                                      //     Colors.pinkAccent,
+                                                      //   ),
+                                                      // )
+                                                    ),
+                                                  );
+                                                }),
+                                      );
+                                    }
+                                        : () {},
+                                    child: // 중복확인
+                                    Text("중복확인",
+                                        style: TextStyle(
+                                            color: const Color(
+                                                0xffffffff),
+                                            fontFamily:
+                                            "NotoSansCJKkr_Medium",
+                                            fontSize: 50 /
+                                                screenWidth),
+                                        textAlign:
+                                        TextAlign.left),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                    : Container(
+                  margin: EdgeInsets.only(top: 31 / screenHeight),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 320 / screenWidth,
+                        child: userId == ""
+                            ? nickNameShow("우아하게", screenWidth)
+                            : FutureBuilder(
+                          future: getMyNickname(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              // print("hasdata " + snapshot.data);
+                              return snapshot.data != ""
+                                  ? nickNameShow(
+                                  snapshot.data,
+                                  screenWidth)
+                                  : nickNameShow(
+                                  "우아하게", screenWidth);
+                            } else if (snapshot.hasError) {
+                              // print("haserror " + snapshot.error);
+                              return nickNameShow(
+                                  snapshot.error,
+                                  screenWidth);
+                            }
+                            return Center(
+                              child: SizedBox(
+                                height: 50 / screenHeight,
+                                width: 50 / screenWidth,
+                                child:
+                                buildSpinKitThreeBounce(
+                                    30, screenWidth),
+                                // CircularProgressIndicator(
+                                //   strokeWidth: 5.0,
+                                //   valueColor:
+                                //       new AlwaysStoppedAnimation<
+                                //           Color>(
+                                //     Colors.pinkAccent,
+                                //   ),
+                                // ),
                               ),
-                            ],
+                            );
+                          },
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(
+                            992 / screenWidth,
+                            0,
+                            148 / screenWidth,
+                            0),
+                        child: loginOption ==
+                            "login" // Change this on release to ==
+                            ? Image.asset(
+                          "./assets/myPage/button1_grey.png",
+                          width: 361 / screenWidth,
+                          height: 147 / screenHeight,
+                        )
+                            : InkWell(
+                          onTap: () {
+                            setState(() {
+                              onEdit = true;
+                            });
+                          },
+                          child: Image.asset(
+                            "./assets/myPage/button1.png",
+                            width: 361 / screenWidth,
+                            height: 147 / screenHeight,
                           ),
                         ),
                       )
-                    : Container(
-                        margin: EdgeInsets.only(top: 31 / screenHeight),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              width: 320 / screenWidth,
-                              child: userId == ""
-                                  ? nickNameShow("우아하게", screenWidth)
-                                  : FutureBuilder(
-                                      future: getMyNickname(),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          // print("hasdata " + snapshot.data);
-                                          return snapshot.data != ""
-                                              ? nickNameShow(
-                                                  snapshot.data, screenWidth)
-                                              : nickNameShow(
-                                                  "우아하게", screenWidth);
-                                        } else if (snapshot.hasError) {
-                                          // print("haserror " + snapshot.error);
-                                          return nickNameShow(
-                                              snapshot.error, screenWidth);
-                                        }
-                                        return Center(
-                                          child: SizedBox(
-                                            height: 50 / screenHeight,
-                                            width: 50 / screenWidth,
-                                            child: buildSpinKitThreeBounce(
-                                                30, screenWidth),
-                                            // CircularProgressIndicator(
-                                            //   strokeWidth: 5.0,
-                                            //   valueColor:
-                                            //       new AlwaysStoppedAnimation<
-                                            //           Color>(
-                                            //     Colors.pinkAccent,
-                                            //   ),
-                                            // ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  992 / screenWidth, 0, 148 / screenWidth, 0),
-                              child: loginOption ==
-                                      "login" // Change this on release to ==
-                                  ? Image.asset(
-                                      "./assets/myPage/button1_grey.png",
-                                      width: 361 / screenWidth,
-                                      height: 147 / screenHeight,
-                                    )
-                                  : InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          onEdit = true;
-                                        });
-                                      },
-                                      child: Image.asset(
-                                        "./assets/myPage/button1.png",
-                                        width: 361 / screenWidth,
-                                        height: 147 / screenHeight,
-                                      ),
-                                    ),
-                            )
-                          ],
-                        ),
-                      ),
+                    ],
+                  ),
+                ),
 
                 //Gender
                 Container(
@@ -859,8 +878,8 @@ class _myPageState extends State<myPage> {
                                     //Color.fromRGBO(255, 114, 148, 1.0)
                                   ),
                                   focusedBorder: UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Color(0xffff7292)),
+                                    borderSide: BorderSide(
+                                        color: Color(0xffff7292)),
                                   ),
                                   hintText: birthday == ""
                                       ? '생년월일을 선택해주세요'
@@ -875,15 +894,15 @@ class _myPageState extends State<myPage> {
                               ),
                               onEdit
                                   ? Align(
-                                      alignment: Alignment.centerRight,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          yearPicker();
-                                        },
-                                        icon: Image.asset(
-                                            "./assets/myPage/calendar.png"),
-                                      ),
-                                    )
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    yearPicker();
+                                  },
+                                  icon: Image.asset(
+                                      "./assets/myPage/calendar.png"),
+                                ),
+                              )
                                   : Container(),
                             ],
                           ),
@@ -915,8 +934,8 @@ class _myPageState extends State<myPage> {
                             Row(
                               children: [
                                 Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 59 / screenWidth),
+                                  padding: EdgeInsets.only(
+                                      left: 59 / screenWidth),
                                   child: InkWell(
                                     child: Image.asset(
                                       changeimage[0]
@@ -931,8 +950,8 @@ class _myPageState extends State<myPage> {
                                   ),
                                 ),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 55 / screenWidth),
+                                  padding: EdgeInsets.only(
+                                      left: 55 / screenWidth),
                                   child: InkWell(
                                     child: Image.asset(
                                       changeimage[1]
@@ -947,8 +966,8 @@ class _myPageState extends State<myPage> {
                                   ),
                                 ),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 55 / screenWidth),
+                                  padding: EdgeInsets.only(
+                                      left: 55 / screenWidth),
                                   child: InkWell(
                                     child: Image.asset(
                                       changeimage[2]
@@ -1029,131 +1048,139 @@ class _myPageState extends State<myPage> {
                 // Ok Button
                 onEdit
                     ? Container(
-                        margin: EdgeInsets.only(top: 87 / screenHeight),
-                        child: SizedBox(
-                          height: 194 / screenWidth,
-                          width: 1193 / screenHeight,
-                          child: FlatButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0)),
-                            color: isIdValid
-                                ? Color(0xffff7292)
-                                : Color(0xffcacaca),
-                            onPressed: isIdValid
-                                ? () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => FutureBuilder(
-                                        future: updateNickname(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            return AlertDialog(
-                                              title: Text(snapshot.data),
-                                              actions: [
-                                                FlatButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                    setState(() {
-                                                      onEdit = false;
-                                                    });
-                                                  },
-                                                  child: // 확인
-                                                      Text("확인",
-                                                          style: TextStyle(
-                                                              color: const Color(
-                                                                  0xffff7292),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontFamily:
-                                                                  "NotoSansCJKkr_Medium",
-                                                              fontStyle:
-                                                                  FontStyle
-                                                                      .normal,
-                                                              fontSize:
-                                                                  _fontsize),
-                                                          textAlign:
-                                                              TextAlign.center),
-                                                ),
-                                              ],
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return AlertDialog(
-                                              title: Text(snapshot.error),
-                                              actions: [
-                                                FlatButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: // 확인
-                                                      Text("확인",
-                                                          style: TextStyle(
-                                                              color: const Color(
-                                                                  0xffff7292),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontFamily:
-                                                                  "NotoSansCJKkr_Medium",
-                                                              fontStyle:
-                                                                  FontStyle
-                                                                      .normal,
-                                                              fontSize:
-                                                                  _fontsize),
-                                                          textAlign:
-                                                              TextAlign.center),
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                          return Center(
-                                            child: SizedBox(
-                                                height: 200 / screenHeight,
-                                                width: 200 / screenWidth,
-                                                child: buildSpinKitThreeBounce(
-                                                    80, screenWidth)
-                                                //     CircularProgressIndicator(
-                                                //   strokeWidth: 5.0,
-                                                //   valueColor:
-                                                //       new AlwaysStoppedAnimation<
-                                                //           Color>(
-                                                //     Colors.pinkAccent,
-                                                //   ),
-                                                // ),
-                                                ),
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  }
-                                : () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text("Check your ID first"),
-                                        actions: [
-                                          FlatButton(
-                                            child: Text("OK"),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                            child: // 중복확인
-                                Text("OK",
-                                    style: TextStyle(
-                                        color: const Color(0xffffffff),
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: "NotoSansCJKkr_Medium",
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: 62 / screenWidth),
-                                    textAlign: TextAlign.left),
+                  margin: EdgeInsets.only(top: 87 / screenHeight),
+                  child: SizedBox(
+                    height: 194 / screenWidth,
+                    width: 1193 / screenHeight,
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0)),
+                      color: isIdValid
+                          ? Color(0xffff7292)
+                          : Color(0xffcacaca),
+                      onPressed: isIdValid
+                          ? () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => FutureBuilder(
+                            future: updateNickname(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return AlertDialog(
+                                  title: Text(snapshot.data),
+                                  actions: [
+                                    FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                            context);
+                                        setState(() {
+                                          onEdit = false;
+                                        });
+                                      },
+                                      child: // 확인
+                                      Text("확인",
+                                          style: TextStyle(
+                                              color: const Color(
+                                                  0xffff7292),
+                                              fontWeight:
+                                              FontWeight
+                                                  .w500,
+                                              fontFamily:
+                                              "NotoSansCJKkr_Medium",
+                                              fontStyle:
+                                              FontStyle
+                                                  .normal,
+                                              fontSize:
+                                              _fontsize),
+                                          textAlign:
+                                          TextAlign
+                                              .center),
+                                    ),
+                                  ],
+                                );
+                              } else if (snapshot.hasError) {
+                                return AlertDialog(
+                                  title: Text(snapshot.error),
+                                  actions: [
+                                    FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                            context);
+                                      },
+                                      child: // 확인
+                                      Text("확인",
+                                          style: TextStyle(
+                                              color: const Color(
+                                                  0xffff7292),
+                                              fontWeight:
+                                              FontWeight
+                                                  .w500,
+                                              fontFamily:
+                                              "NotoSansCJKkr_Medium",
+                                              fontStyle:
+                                              FontStyle
+                                                  .normal,
+                                              fontSize:
+                                              _fontsize),
+                                          textAlign:
+                                          TextAlign
+                                              .center),
+                                    ),
+                                  ],
+                                );
+                              }
+                              return Center(
+                                child: SizedBox(
+                                    height:
+                                    200 / screenHeight,
+                                    width: 200 / screenWidth,
+                                    child:
+                                    buildSpinKitThreeBounce(
+                                        80, screenWidth)
+                                  //     CircularProgressIndicator(
+                                  //   strokeWidth: 5.0,
+                                  //   valueColor:
+                                  //       new AlwaysStoppedAnimation<
+                                  //           Color>(
+                                  //     Colors.pinkAccent,
+                                  //   ),
+                                  // ),
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      )
+                        );
+                      }
+                          : () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title:
+                            Text("Check your ID first"),
+                            actions: [
+                              FlatButton(
+                                child: Text("OK"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: // 중복확인
+                      Text("OK",
+                          style: TextStyle(
+                              color: const Color(0xffffffff),
+                              fontWeight: FontWeight.w500,
+                              fontFamily:
+                              "NotoSansCJKkr_Medium",
+                              fontStyle: FontStyle.normal,
+                              fontSize: 62 / screenWidth),
+                          textAlign: TextAlign.left),
+                    ),
+                  ),
+                )
                     : Container(),
 
                 //logout
@@ -1173,69 +1200,77 @@ class _myPageState extends State<myPage> {
                             context: context,
                             builder: (context) => AlertDialog(
                               title: // 로그아웃 하시겠습니까?
-                                  Text("로그아웃 하시겠습니까?",
-                                      style: TextStyle(
-                                          color: const Color(0xff4d4d4d),
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: "NotoSansCJKkr_Medium",
-                                          fontStyle: FontStyle.normal,
-                                          fontSize: 62.5 / screenWidth),
-                                      textAlign: TextAlign.left),
+                              Text("로그아웃 하시겠습니까?",
+                                  style: TextStyle(
+                                      color: const Color(0xff4d4d4d),
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily:
+                                      "NotoSansCJKkr_Medium",
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 62.5 / screenWidth),
+                                  textAlign: TextAlign.left),
                               actions: [
                                 FlatButton(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
                                   child: // 아니요
-                                      Text("아니요",
-                                          style: TextStyle(
-                                              color: const Color(0xffff7292),
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily:
-                                                  "NotoSansCJKkr_Medium",
-                                              fontStyle: FontStyle.normal,
-                                              fontSize: _fontsize),
-                                          textAlign: TextAlign.left),
+                                  Text("아니요",
+                                      style: TextStyle(
+                                          color:
+                                          const Color(0xffff7292),
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle: FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign: TextAlign.left),
                                 ),
                                 FlatButton(
                                   onPressed: () async {
                                     SharedPreferences prefs =
-                                        await SharedPreferences.getInstance();
+                                    await SharedPreferences
+                                        .getInstance();
                                     await prefs.remove("uahageUserId");
-                                    await prefs.remove("uahageLoginOption");
+                                    await prefs
+                                        .remove("uahageLoginOption");
                                     Navigator.pop(context);
 
                                     Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => loginPage()),
-                                      (Route<dynamic> route) => false,
+                                          builder: (context) =>
+                                              loginPage()),
+                                          (Route<dynamic> route) => false,
                                     );
                                     // Navigator.of(context)
                                     //     .popUntil((route) => route.isFirst);
                                   },
                                   child: // 네
-                                      Text("네",
-                                          style: TextStyle(
-                                              color: const Color(0xffff7292),
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily:
-                                                  "NotoSansCJKkr_Medium",
-                                              fontStyle: FontStyle.normal,
-                                              fontSize: _fontsize),
-                                          textAlign: TextAlign.left),
+                                  Text("네",
+                                      style: TextStyle(
+                                          color:
+                                          const Color(0xffff7292),
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle: FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign: TextAlign.left),
                                 ),
                               ],
                             ),
                           );
                         },
                         child: // 로그아웃
-                            Text("로그아웃",
-                                style: textStyle52, textAlign: TextAlign.left),
+                        Text("로그아웃",
+                            style: textStyle52,
+                            textAlign: TextAlign.left),
                       ),
                       Container(
                         margin: EdgeInsets.only(
-                            left: 15 / screenWidth, right: 15 / screenWidth),
+                            left: 15 / screenWidth,
+                            right: 15 / screenWidth),
                         child: Text(
                           "|",
                           style: textStyle52,
@@ -1244,136 +1279,1195 @@ class _myPageState extends State<myPage> {
                       InkWell(
                         onTap: loginOption == "login"
                             ? () {
-                                Fluttertoast.showToast(
-                                  msg: "  로그인 해주세요!",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.black45,
-                                  textColor: Colors.white,
-                                  fontSize: 48 / screenWidth,
-                                );
-                              }
+                          Fluttertoast.showToast(
+                            msg: "  로그인 해주세요!",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.black45,
+                            textColor: Colors.white,
+                            fontSize: 48 / screenWidth,
+                          );
+                        }
                             : () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text(
-                                        "탈퇴하시겠습니까? 탈퇴 시 기존 데이터를 복구할 수 없습니다.",
-                                        style: TextStyle(
-                                            color: const Color(0xff4d4d4d),
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: "NotoSansCJKkr_Medium",
-                                            fontStyle: FontStyle.normal,
-                                            fontSize: 70.5 / screenWidth),
-                                        textAlign: TextAlign.left),
-                                    actions: [
-                                      FlatButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: // 아니요
-                                            Text("아니요",
-                                                style: TextStyle(
-                                                    color:
-                                                        const Color(0xffff7292),
-                                                    fontWeight: FontWeight.w500,
-                                                    fontFamily:
-                                                        "NotoSansCJKkr_Medium",
-                                                    fontStyle: FontStyle.normal,
-                                                    fontSize: _fontsize),
-                                                textAlign: TextAlign.left),
-                                      ),
-                                      FlatButton(
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          await prefs.remove("uahageUserId");
-                                          await prefs
-                                              .remove("uahageLoginOption");
-                                          //delete data in the database
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => FutureBuilder(
-                                              future: withdrawalUser(),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData) {
-                                                  print("hasdata");
-                                                  WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                          (_) {
-                                                    Navigator.of(context).pushReplacement(
-                                                        MaterialPageRoute(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                withdrawal()));
-                                                  });
-                                                } else if (snapshot.hasError) {
-                                                  WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                          (_) {
-                                                    Navigator.of(context).pushReplacement(
-                                                        MaterialPageRoute(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                withdrawal()));
-                                                  });
-                                                }
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(
+                                  "탈퇴하시겠습니까? 탈퇴 시 기존 데이터를 복구할 수 없습니다.",
+                                  style: TextStyle(
+                                      color:
+                                      const Color(0xff4d4d4d),
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily:
+                                      "NotoSansCJKkr_Medium",
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 70.5 / screenWidth),
+                                  textAlign: TextAlign.left),
+                              actions: [
+                                FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: // 아니요
+                                  Text("아니요",
+                                      style: TextStyle(
+                                          color: const Color(
+                                              0xffff7292),
+                                          fontWeight:
+                                          FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle:
+                                          FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign:
+                                      TextAlign.left),
+                                ),
+                                FlatButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    SharedPreferences prefs =
+                                    await SharedPreferences
+                                        .getInstance();
+                                    await prefs
+                                        .remove("uahageUserId");
+                                    await prefs.remove(
+                                        "uahageLoginOption");
+                                    //delete data in the database
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => FutureBuilder(
+                                        future: withdrawalUser(),
+                                        builder:
+                                            (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            print("hasdata");
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (_) {
+                                                  Navigator.of(context).pushReplacement(
+                                                      MaterialPageRoute(
+                                                          builder: (BuildContext
+                                                          context) =>
+                                                              withdrawal()));
+                                                });
+                                          } else if (snapshot
+                                              .hasError) {
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (_) {
+                                                  Navigator.of(context).pushReplacement(
+                                                      MaterialPageRoute(
+                                                          builder: (BuildContext
+                                                          context) =>
+                                                              withdrawal()));
+                                                });
+                                          }
 
-                                                return Center(
-                                                  child: SizedBox(
-                                                      height:
-                                                          200 / screenHeight,
-                                                      width: 200 / screenWidth,
-                                                      child:
-                                                          buildSpinKitThreeBounce(
-                                                              80, screenWidth)
-                                                      //     CircularProgressIndicator(
-                                                      //   strokeWidth: 5.0,
-                                                      //   valueColor:
-                                                      //       new AlwaysStoppedAnimation<
-                                                      //           Color>(
-                                                      //     Colors.pinkAccent,
-                                                      //   ),
-                                                      // )
-                                                      ),
-                                                );
-                                              },
+                                          return Center(
+                                            child: SizedBox(
+                                                height: 200 /
+                                                    screenHeight,
+                                                width: 200 /
+                                                    screenWidth,
+                                                child:
+                                                buildSpinKitThreeBounce(
+                                                    80,
+                                                    screenWidth)
+                                              //     CircularProgressIndicator(
+                                              //   strokeWidth: 5.0,
+                                              //   valueColor:
+                                              //       new AlwaysStoppedAnimation<
+                                              //           Color>(
+                                              //     Colors.pinkAccent,
+                                              //   ),
+                                              // )
                                             ),
                                           );
-
-                                          // Navigator.pushReplacement(
-                                          //     context,
-                                          //     MaterialPageRoute(
-                                          //         builder: (context) => loginPage()));
-                                          // Navigator.of(context)
-                                          //     .popUntil((route) => route.isFirst);
                                         },
-                                        child: // 네
-                                            Text("네",
-                                                style: TextStyle(
-                                                    color:
-                                                        const Color(0xffff7292),
-                                                    fontWeight: FontWeight.w500,
-                                                    fontFamily:
-                                                        "NotoSansCJKkr_Medium",
-                                                    fontStyle: FontStyle.normal,
-                                                    fontSize: _fontsize),
-                                                textAlign: TextAlign.left),
                                       ),
-                                    ],
-                                  ),
-                                );
-                              },
+                                    );
+
+                                    // Navigator.pushReplacement(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) => loginPage()));
+                                    // Navigator.of(context)
+                                    //     .popUntil((route) => route.isFirst);
+                                  },
+                                  child: // 네
+                                  Text("네",
+                                      style: TextStyle(
+                                          color: const Color(
+                                              0xffff7292),
+                                          fontWeight:
+                                          FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle:
+                                          FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign:
+                                      TextAlign.left),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                         child: // 로그아웃   |   회원탈퇴
-                            Text("회원탈퇴",
-                                style: textStyle52, textAlign: TextAlign.left),
+                        Text("회원탈퇴",
+                            style: textStyle52,
+                            textAlign: TextAlign.left),
                       ),
                     ],
                   ),
                 ),
+              ],
+            ),
+          )
+              : SingleChildScrollView(
+            child: Column(
+              children: [
+                //back button
+                Container(
+                  margin: EdgeInsets.fromLTRB(81 / screenWidth,
+                      110 / screenHeight, 1100 / screenWidth, 0),
+                  child: onEdit
+                      ? InkWell(
+                    onTap: () {
+                      setState(() {
+                        onEdit = false;
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "./assets/myPage/back.png",
+                          width: 43 / screenWidth,
+                          height: 76 / screenHeight,
+                        ),
+                        // 내 정보
+                        Container(
+                          margin: EdgeInsets.only(
+                              left: 33 / screenWidth),
+                          child: Text("내 정보",
+                              style: TextStyle(
+                                color: Color.fromRGBO(
+                                    255, 114, 148, 1.0),
+                                fontFamily: 'NotoSansCJKkr_Medium',
+                                fontSize: 57 / screenWidth,
+                              ),
+                              textAlign: TextAlign.left),
+                        )
+                      ],
+                    ),
+                  )
+                      : Container(),
+                ),
+
+                //Center avatar
+                Center(
+                  child: Stack(
+                    children: [
+                      SizedBox(
+                        height: 439 / screenHeight,
+                        width: 439 / screenWidth,
+                        child: CircleAvatar(
+                          backgroundImage:
+                          AssetImage("./assets/myPage/avatar.png"),
+                          // backgroundImage: (() {
+                          //   if (_image != null) {
+                          //     print("1");
+                          //     return FileImage(_image);
+                          //   } else if (imageLink != "" && imageLink != null) {
+                          //     print("2");
+                          //     // print("here " + imageLink);
+                          //     return NetworkImage(imageLink); //imageURL
+
+                          //   } else {
+                          //     print("3");
+                          //     return AssetImage("./assets/myPage/avatar.png");
+                          //   }
+                          // }()),
+                          // child: Image.network(imageLink),
+                          child: (() {
+                            // your code here
+
+                            if (_image != null) {
+                              print("1");
+                              print("here " + imageLink);
+                              return Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: FileImage(_image), //imageURL
+                                      fit: BoxFit.fill),
+                                ),
+                              );
+                            } else if (imageLink != "" &&
+                                imageLink != null) {
+                              print("2");
+                              return Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: NetworkImage(imageLink),
+                                      fit: BoxFit.fill),
+                                ),
+                              );
+                            } else {
+                              print("3");
+                              return Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                          "./assets/myPage/avatar.png"),
+                                      fit: BoxFit.fill),
+                                ),
+                              );
+                            }
+                          }()),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(
+                            330 / screenWidth, 341 / screenHeight, 0, 0),
+                        child: InkWell(
+                          onTap: loginOption != "login"
+                              ? () {
+                            _showPicker(context);
+                          }
+                              : () {
+                            Fluttertoast.showToast(
+                              msg: "로그인 해주세요!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.black45,
+                              textColor: Colors.white,
+                              fontSize: 48 / screenWidth,
+                            );
+                          },
+                          child: Image.asset(
+                            "./assets/myPage/camera.png",
+                            height: 109 / screenHeight,
+                            width: 110 / screenWidth,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Nickname
+                onEdit
+                    ? Container(
+                  margin: EdgeInsets.only(
+                    top: 85 / screenHeight,
+                  ),
+                  child: Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 닉네임
+                        Container(
+                          margin: EdgeInsets.fromLTRB(
+                              157 / screenWidth,
+                              45 / screenHeight,
+                              88 / screenWidth,
+                              0),
+                          child: Text("닉네임",
+                              style: TextStyle(
+                                  color: const Color(0xffff7292),
+                                  fontFamily:
+                                  "NotoSansCJKkr_Medium",
+                                  fontSize: 58 / screenWidth),
+                              textAlign: TextAlign.left),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              right: 121 / screenWidth,
+                            ),
+                            child: Stack(
+                              children: [
+                                TextFormField(
+                                  // controller: yController,
+
+                                  onChanged: (txt) {
+                                    setState(() {
+                                      nickName = txt;
+                                    });
+                                  },
+
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      color: Color(0xff3a3939),
+                                      fontFamily:
+                                      "NotoSansCJKkr_Bold",
+                                      fontSize: 58 / screenWidth),
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(
+                                        right: 410 / screenWidth),
+                                    enabledBorder:
+                                    UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                        const Color(0xffff7292),
+                                      ),
+
+                                      //Color.fromRGBO(255, 114, 148, 1.0)
+                                    ),
+                                    focusedBorder:
+                                    UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color(0xffff7292)),
+                                    ),
+                                    hintText: '닉네임 수정 칼라',
+                                    hintStyle: TextStyle(
+                                        color:
+                                        const Color(0xffcacaca),
+                                        fontFamily:
+                                        "NotoSansCJKkr_Medium",
+                                        fontSize: 58 / screenWidth),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: FlatButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            8.0)),
+                                    color: nickName == ""
+                                        ? Color(0xffcacaca)
+                                        : Color(0xffff7292),
+                                    onPressed:
+                                    loginOption != "login" &&
+                                        nickName != ""
+                                        ? () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            FutureBuilder(
+                                                future:
+                                                checkNickname(),
+                                                builder:
+                                                    (context,
+                                                    snapshot) {
+                                                  if (snapshot
+                                                      .hasData) {
+                                                    // print(snapshot.data);
+                                                    return AlertDialog(
+                                                      shape:
+                                                      RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                                                      title: // 사용 가능한 닉네임입니다.
+                                                      Text(snapshot.data, style: TextStyle(color: const Color(0xff4d4d4d), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: 62.5 / screenWidth), textAlign: TextAlign.left),
+                                                      actions: [
+                                                        FlatButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(context);
+                                                            },
+                                                            child: // 확인
+                                                            Text("확인", style: TextStyle(color: const Color(0xffff7292), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: _fontsize), textAlign: TextAlign.center))
+                                                      ],
+                                                    );
+                                                  } else if (snapshot
+                                                      .hasError)
+                                                    return AlertDialog(
+                                                      shape:
+                                                      RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                                                      title:
+                                                      // id already exists.
+                                                      Text(snapshot.error, style: TextStyle(color: Color(0xff4d4d4d), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: 62.5 / screenWidth), textAlign: TextAlign.left),
+                                                      actions: [
+                                                        FlatButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(context);
+                                                            },
+                                                            child: // 확인
+                                                            Text("확인", style: TextStyle(color: const Color(0xffff7292), fontWeight: FontWeight.w500, fontFamily: "NotoSansCJKkr_Medium", fontStyle: FontStyle.normal, fontSize: _fontsize), textAlign: TextAlign.center))
+                                                      ],
+                                                    );
+
+                                                  return Center(
+                                                    child: SizedBox(
+                                                        height: 200 / screenHeight,
+                                                        width: 200 / screenWidth,
+                                                        child: buildSpinKitThreeBounce(80, screenWidth)
+                                                      // CircularProgressIndicator(
+                                                      //   strokeWidth:
+                                                      //       5.0,
+                                                      //   valueColor:
+                                                      //       new AlwaysStoppedAnimation<Color>(
+                                                      //     Colors.pinkAccent,
+                                                      //   ),
+                                                      // )
+                                                    ),
+                                                  );
+                                                }),
+                                      );
+                                    }
+                                        : () {},
+                                    child: // 중복확인
+                                    Text("중복확인",
+                                        style: TextStyle(
+                                            color: const Color(
+                                                0xffffffff),
+                                            fontFamily:
+                                            "NotoSansCJKkr_Medium",
+                                            fontSize: 50 /
+                                                screenWidth),
+                                        textAlign:
+                                        TextAlign.left),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                    : Container(
+                  margin: EdgeInsets.only(top: 31 / screenHeight),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 320 / screenWidth,
+                        child: userId == ""
+                            ? nickNameShow("우아하게", screenWidth)
+                            : FutureBuilder(
+                          future: getMyNickname(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              // print("hasdata " + snapshot.data);
+                              return snapshot.data != ""
+                                  ? nickNameShow(
+                                  snapshot.data,
+                                  screenWidth)
+                                  : nickNameShow(
+                                  "우아하게", screenWidth);
+                            } else if (snapshot.hasError) {
+                              // print("haserror " + snapshot.error);
+                              return nickNameShow(
+                                  snapshot.error,
+                                  screenWidth);
+                            }
+                            return Center(
+                              child: SizedBox(
+                                height: 50 / screenHeight,
+                                width: 50 / screenWidth,
+                                child:
+                                buildSpinKitThreeBounce(
+                                    30, screenWidth),
+                                // CircularProgressIndicator(
+                                //   strokeWidth: 5.0,
+                                //   valueColor:
+                                //       new AlwaysStoppedAnimation<
+                                //           Color>(
+                                //     Colors.pinkAccent,
+                                //   ),
+                                // ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(
+                            992 / screenWidth,
+                            0,
+                            148 / screenWidth,
+                            0),
+                        child: loginOption ==
+                            "login" // Change this on release to ==
+                            ? Image.asset(
+                          "./assets/myPage/button1_grey.png",
+                          width: 361 / screenWidth,
+                          height: 147 / screenHeight,
+                        )
+                            : InkWell(
+                          onTap: () {
+                            setState(() {
+                              onEdit = true;
+                            });
+                          },
+                          child: Image.asset(
+                            "./assets/myPage/button1.png",
+                            width: 361 / screenWidth,
+                            height: 147 / screenHeight,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                //Gender
+                Container(
+                  margin: EdgeInsets.fromLTRB(
+                      99 / screenWidth, 100 / screenHeight, 0, 0),
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 아이성별
+                      Container(
+                        margin: EdgeInsets.fromLTRB(
+                            0, 24 / screenHeight, 56 / screenWidth, 0),
+                        child: Text("아이성별",
+                            style: TextStyle(
+                                color: const Color(0xffff7292),
+                                fontFamily: "NotoSansCJKkr_Medium",
+                                fontSize: 57 / screenWidth),
+                            textAlign: TextAlign.left),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            gender = "boy";
+                            genderImage[0] = !genderImage[0];
+                            genderImage[1] = false;
+                          });
+                        },
+                        child: Image.asset(
+                          genderImage[0]
+                              ? "./assets/myPage/boy_pink.png"
+                              : "./assets/myPage/boy_grey.png",
+                          height: 363 / screenHeight,
+                          width: 262 / screenWidth,
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 98 / screenWidth),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              gender = "girl";
+                              genderImage[1] = !genderImage[1];
+                              genderImage[0] = false;
+                            });
+                          },
+                          child: Image.asset(
+                            genderImage[1]
+                                ? "./assets/myPage/girl_pink.png"
+                                : "./assets/myPage/girl_grey.png",
+                            height: 363 / screenHeight,
+                            width: 262 / screenWidth,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Birthday
+
+                Container(
+                  margin: EdgeInsets.fromLTRB(
+                      99 / screenWidth, 40 / screenHeight, 0, 0),
+                  child: Row(
+                    children: [
+                      // 아이생일
+                      Text("아이생일",
+                          style: TextStyle(
+                            fontSize: 56 / screenWidth,
+                            color: const Color(0xffff7292),
+                            fontFamily: "NotoSansCJKkr_Medium",
+                          ),
+                          textAlign: TextAlign.left),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(
+                              82 / screenWidth, 0, 121 / screenWidth, 0),
+                          child: Stack(
+                            children: [
+                              TextFormField(
+                                readOnly: true,
+                                controller: yController,
+                                onChanged: (txt) {
+                                  setState(() {
+                                    birthday = txt;
+                                  });
+                                },
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    color: Color(0xffff7292),
+                                    fontSize: 73 / screenWidth,
+                                    fontFamily: 'NotoSansCJKkr_Medium',
+                                    fontStyle: FontStyle.normal,
+                                    letterSpacing: -1.0),
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: const Color(0xffff7292),
+                                    ),
+                                    //Color.fromRGBO(255, 114, 148, 1.0)
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Color(0xffff7292)),
+                                  ),
+                                  hintText: birthday == ""
+                                      ? '생년월일을 선택해주세요'
+                                      : birthday,
+                                  hintStyle: TextStyle(
+                                      color: const Color(0xffff7292),
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: "NotoSansCJKkr",
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 66.0 / screenWidth),
+                                ),
+                              ),
+                              onEdit
+                                  ? Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    yearPicker();
+                                  },
+                                  icon: Image.asset(
+                                      "./assets/myPage/calendar.png"),
+                                ),
+                              )
+                                  : Container(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Ages
+                Container(
+                  margin: EdgeInsets.fromLTRB(
+                      155 / screenWidth, 98 / screenHeight, 0, 0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 보호자 연령대
+                      Text("보호자\n연령대",
+                          style: TextStyle(
+                            color: const Color(0xffff7292),
+                            fontWeight: FontWeight.w500,
+                            fontFamily: "NotoSansCJKkr_Medium",
+                            fontStyle: FontStyle.normal,
+                            fontSize: _fontsize,
+                          ),
+                          textAlign: TextAlign.right),
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 59 / screenWidth),
+                                  child: InkWell(
+                                    child: Image.asset(
+                                      changeimage[0]
+                                          ? './assets/registrationPage/10_pink.png'
+                                          : './assets/registrationPage/10_grey.png',
+                                      height: 196 / screenHeight,
+                                      width: 251 / screenWidth,
+                                    ),
+                                    onTap: () {
+                                      _change('10');
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 55 / screenWidth),
+                                  child: InkWell(
+                                    child: Image.asset(
+                                      changeimage[1]
+                                          ? './assets/registrationPage/20_pink.png'
+                                          : './assets/registrationPage/20_grey.png',
+                                      height: 196 / screenHeight,
+                                      width: 251 / screenWidth,
+                                    ),
+                                    onTap: () {
+                                      _change('20');
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 55 / screenWidth),
+                                  child: InkWell(
+                                    child: Image.asset(
+                                      changeimage[2]
+                                          ? './assets/registrationPage/30_pink.png'
+                                          : './assets/registrationPage/30_grey.png',
+                                      height: 196 / screenHeight,
+                                      width: 251 / screenWidth,
+                                    ),
+                                    onTap: () {
+                                      _change('30');
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 59 / screenWidth,
+                                      top: 45 / screenHeight),
+                                  child: InkWell(
+                                    child: Image.asset(
+                                      changeimage[3]
+                                          ? './assets/registrationPage/40_pink.png'
+                                          : './assets/registrationPage/40_grey.png',
+                                      height: 196 / screenHeight,
+                                      width: 251 / screenWidth,
+                                    ),
+                                    onTap: () {
+                                      _change('40');
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 55 / screenWidth,
+                                      top: 45 / screenHeight),
+                                  child: InkWell(
+                                    child: Image.asset(
+                                      changeimage[4]
+                                          ? './assets/registrationPage/50_pink.png'
+                                          : './assets/registrationPage/50_grey.png',
+                                      height: 196 / screenHeight,
+                                      width: 251 / screenWidth,
+                                    ),
+                                    onTap: () {
+                                      _change('50');
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 55 / screenWidth,
+                                      top: 45 / screenHeight),
+                                  child: InkWell(
+                                    child: Image.asset(
+                                      changeimage[5]
+                                          ? './assets/registrationPage/others_pink.png'
+                                          : './assets/registrationPage/others_grey.png',
+                                      height: 196 / screenHeight,
+                                      width: 251 / screenWidth,
+                                    ),
+                                    onTap: () {
+                                      _change('60');
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Ok Button
+                onEdit
+                    ? Container(
+                  margin: EdgeInsets.only(top: 87 / screenHeight),
+                  child: SizedBox(
+                    height: 194 / screenWidth,
+                    width: 1193 / screenHeight,
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0)),
+                      color: isIdValid
+                          ? Color(0xffff7292)
+                          : Color(0xffcacaca),
+                      onPressed: isIdValid
+                          ? () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => FutureBuilder(
+                            future: updateNickname(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return AlertDialog(
+                                  title: Text(snapshot.data),
+                                  actions: [
+                                    FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                            context);
+                                        setState(() {
+                                          onEdit = false;
+                                        });
+                                      },
+                                      child: // 확인
+                                      Text("확인",
+                                          style: TextStyle(
+                                              color: const Color(
+                                                  0xffff7292),
+                                              fontWeight:
+                                              FontWeight
+                                                  .w500,
+                                              fontFamily:
+                                              "NotoSansCJKkr_Medium",
+                                              fontStyle:
+                                              FontStyle
+                                                  .normal,
+                                              fontSize:
+                                              _fontsize),
+                                          textAlign:
+                                          TextAlign
+                                              .center),
+                                    ),
+                                  ],
+                                );
+                              } else if (snapshot.hasError) {
+                                return AlertDialog(
+                                  title: Text(snapshot.error),
+                                  actions: [
+                                    FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                            context);
+                                      },
+                                      child: // 확인
+                                      Text("확인",
+                                          style: TextStyle(
+                                              color: const Color(
+                                                  0xffff7292),
+                                              fontWeight:
+                                              FontWeight
+                                                  .w500,
+                                              fontFamily:
+                                              "NotoSansCJKkr_Medium",
+                                              fontStyle:
+                                              FontStyle
+                                                  .normal,
+                                              fontSize:
+                                              _fontsize),
+                                          textAlign:
+                                          TextAlign
+                                              .center),
+                                    ),
+                                  ],
+                                );
+                              }
+                              return Center(
+                                child: SizedBox(
+                                    height:
+                                    200 / screenHeight,
+                                    width: 200 / screenWidth,
+                                    child:
+                                    buildSpinKitThreeBounce(
+                                        80, screenWidth)
+                                  //     CircularProgressIndicator(
+                                  //   strokeWidth: 5.0,
+                                  //   valueColor:
+                                  //       new AlwaysStoppedAnimation<
+                                  //           Color>(
+                                  //     Colors.pinkAccent,
+                                  //   ),
+                                  // ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                          : () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title:
+                            Text("Check your ID first"),
+                            actions: [
+                              FlatButton(
+                                child: Text("OK"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: // 중복확인
+                      Text("OK",
+                          style: TextStyle(
+                              color: const Color(0xffffffff),
+                              fontWeight: FontWeight.w500,
+                              fontFamily:
+                              "NotoSansCJKkr_Medium",
+                              fontStyle: FontStyle.normal,
+                              fontSize: 62 / screenWidth),
+                          textAlign: TextAlign.left),
+                    ),
+                  ),
+                )
+                    : Container(),
+
+                //logout
+             userId!=""?
+                Container(
+                  margin: EdgeInsets.fromLTRB(
+                      931 / screenWidth,
+                      onEdit ? 88 / screenHeight : 370 / screenHeight,
+                      0,
+                      71 / screenHeight),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: // 로그아웃 하시겠습니까?
+                              Text("로그아웃 하시겠습니까?",
+                                  style: TextStyle(
+                                      color: const Color(0xff4d4d4d),
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily:
+                                      "NotoSansCJKkr_Medium",
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 62.5 / screenWidth),
+                                  textAlign: TextAlign.left),
+                              actions: [
+                                FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: // 아니요
+                                  Text("아니요",
+                                      style: TextStyle(
+                                          color:
+                                          const Color(0xffff7292),
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle: FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign: TextAlign.left),
+                                ),
+                                FlatButton(
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                    await SharedPreferences
+                                        .getInstance();
+                                    await prefs.remove("uahageUserId");
+                                    await prefs
+                                        .remove("uahageLoginOption");
+                                    Navigator.pop(context);
+
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              loginPage()),
+                                          (Route<dynamic> route) => false,
+                                    );
+                                    // Navigator.of(context)
+                                    //     .popUntil((route) => route.isFirst);
+                                  },
+                                  child: // 네
+                                  Text("네",
+                                      style: TextStyle(
+                                          color:
+                                          const Color(0xffff7292),
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle: FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign: TextAlign.left),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: // 로그아웃
+                        Text("로그아웃",
+                            style: textStyle52,
+                            textAlign: TextAlign.left),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: 15 / screenWidth,
+                            right: 15 / screenWidth),
+                        child: Text(
+                          "|",
+                          style: textStyle52,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: loginOption == "login"
+                            ? () {
+                          Fluttertoast.showToast(
+                            msg: "  로그인 해주세요!",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.black45,
+                            textColor: Colors.white,
+                            fontSize: 48 / screenWidth,
+                          );
+                        }
+                            : () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(
+                                  "탈퇴하시겠습니까? 탈퇴 시 기존 데이터를 복구할 수 없습니다.",
+                                  style: TextStyle(
+                                      color:
+                                      const Color(0xff4d4d4d),
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily:
+                                      "NotoSansCJKkr_Medium",
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 70.5 / screenWidth),
+                                  textAlign: TextAlign.left),
+                              actions: [
+                                FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: // 아니요
+                                  Text("아니요",
+                                      style: TextStyle(
+                                          color: const Color(
+                                              0xffff7292),
+                                          fontWeight:
+                                          FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle:
+                                          FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign:
+                                      TextAlign.left),
+                                ),
+                                FlatButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    SharedPreferences prefs =
+                                    await SharedPreferences
+                                        .getInstance();
+                                    await prefs
+                                        .remove("uahageUserId");
+                                    await prefs.remove(
+                                        "uahageLoginOption");
+                                    //delete data in the database
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => FutureBuilder(
+                                        future: withdrawalUser(),
+                                        builder:
+                                            (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            print("hasdata");
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (_) {
+                                                  Navigator.of(context).pushReplacement(
+                                                      MaterialPageRoute(
+                                                          builder: (BuildContext
+                                                          context) =>
+                                                              withdrawal()));
+                                                });
+                                          } else if (snapshot
+                                              .hasError) {
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (_) {
+                                                  Navigator.of(context).pushReplacement(
+                                                      MaterialPageRoute(
+                                                          builder: (BuildContext
+                                                          context) =>
+                                                              withdrawal()));
+                                                });
+                                          }
+
+                                          return Center(
+                                            child: SizedBox(
+                                                height: 200 /
+                                                    screenHeight,
+                                                width: 200 /
+                                                    screenWidth,
+                                                child:
+                                                buildSpinKitThreeBounce(
+                                                    80,
+                                                    screenWidth)
+                                              //     CircularProgressIndicator(
+                                              //   strokeWidth: 5.0,
+                                              //   valueColor:
+                                              //       new AlwaysStoppedAnimation<
+                                              //           Color>(
+                                              //     Colors.pinkAccent,
+                                              //   ),
+                                              // )
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+
+                                    // Navigator.pushReplacement(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) => loginPage()));
+                                    // Navigator.of(context)
+                                    //     .popUntil((route) => route.isFirst);
+                                  },
+                                  child: // 네
+                                  Text("네",
+                                      style: TextStyle(
+                                          color: const Color(
+                                              0xffff7292),
+                                          fontWeight:
+                                          FontWeight.w500,
+                                          fontFamily:
+                                          "NotoSansCJKkr_Medium",
+                                          fontStyle:
+                                          FontStyle.normal,
+                                          fontSize: _fontsize),
+                                      textAlign:
+                                      TextAlign.left),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: // 로그아웃   |   회원탈퇴
+                        Text("회원탈퇴",
+                            style: textStyle52,
+                            textAlign: TextAlign.left),
+                      ),
+                    ],
+                  ),
+                ): Container(
+               margin: EdgeInsets.fromLTRB(
+                   931 / screenWidth,
+                   onEdit ? 88 / screenHeight : 370 / screenHeight,
+                   0,
+                   71 / screenHeight),
+               child:InkWell(
+                   child: Text("로그인하기",
+                       style: textStyle52, textAlign: TextAlign.left),
+                   onTap:(){  Navigator.of(context).pop();}
+               ),
+             )
               ],
             ),
           ),

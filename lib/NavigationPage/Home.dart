@@ -667,6 +667,8 @@ class _homePageState extends State<homePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => Keyword(
+                                              userId: userId,
+                                              loginOption: loginOption,
                                               latitude: latitude,
                                               longitude: longitude,
                                               searchkey: searchkey)));
